@@ -48,4 +48,5 @@ func init() {
 	}
 	S3Config = c.S3
 	ServerConfig = c.Server
+	SitesConfig = c.Sites
 }
