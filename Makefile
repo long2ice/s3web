@@ -1,4 +1,4 @@
-PROJECT_NAME := "s3www"
+PROJECT_NAME := "s3web"
 PKG := "github.com/long2ice/$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/ )
 

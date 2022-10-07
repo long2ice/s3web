@@ -8,10 +8,10 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN go build -o s3www .
+RUN go build -o s3web .
 
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /build/s3www /
+COPY --from=builder /build/s3web /
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-ENTRYPOINT ["/s3www"]
+ENTRYPOINT ["/s3web"]

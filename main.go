@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/long2ice/s3www/config"
+	"github.com/long2ice/s3web/config"
 	log "github.com/sirupsen/logrus"
 )
 
