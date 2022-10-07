@@ -1,0 +1,8 @@
+version: "3"
+services:
+  s3web:
+    image: ghcr.io/long2ice/s3web/s3web
+    network_mode: host
+    restart: always
+    volumes:
+      - ./config:/config

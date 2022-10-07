@@ -29,7 +29,7 @@ type Config struct {
 
 var (
 	S3Config     *S3
-	SitesConfig  map[string]string
+	SitesConfig  []Site
 	ServerConfig *Server
 )
 
@@ -47,9 +47,5 @@ func init() {
 		log.Fatalf("unable to decode into struct, %v", err)
 	}
 	S3Config = c.S3
-	SitesConfig = make(map[string]string)
-	for _, site := range c.Sites {
-		SitesConfig[site.Domain] = site.SubFolder
-	}
 	ServerConfig = c.Server
 }

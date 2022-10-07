@@ -137,15 +137,23 @@ func (s3 *S3FileSystem) getObject(ctx context.Context, name string) (*minio.Obje
 }
 
 type S3Handler struct {
-	*minio.Client
+	fsMap map[string]*S3FileSystem
+}
+
+func NewS3Handler() *S3Handler {
+	fs := make(map[string]*S3FileSystem)
+	for _, site := range config.SitesConfig {
+		fs[site.Domain] = NewS3FileSystem(config.S3Config.Bucket, site.SubFolder)
+	}
+	return &S3Handler{
+		fsMap: fs,
+	}
 }
 
 func (s *S3Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	hostWithPort := request.Host
 	host := strings.Split(hostWithPort, ":")[0]
-	if subFolder, ok := config.SitesConfig[host]; ok {
-		fs := NewS3FileSystem(config.S3Config.Bucket, subFolder)
-		fs.subFolder = subFolder
+	if fs, ok := s.fsMap[host]; ok {
 		http.FileServer(fs).ServeHTTP(writer, request)
 	} else {
 		http.NotFound(writer, request)

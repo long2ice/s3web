@@ -24,8 +24,8 @@ func WithLogging(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", WithLogging(&S3Handler{}))
+	http.Handle("/", WithLogging(NewS3Handler()))
 	listen := config.ServerConfig.Listen
-	log.Infof("Started listening on %s\n", listen)
+	log.Infof("Started listening on %s", listen)
 	log.Fatalln(http.ListenAndServe(listen, nil))
 }
