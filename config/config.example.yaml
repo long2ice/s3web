@@ -1,0 +1,12 @@
+server:
+  listen: 0.0.0.0:8080
+s3:
+  endpoint: localhost:9000
+  schema: http
+  accessKey: minio
+  secretKey: minio123
+  bucket: mybucket
+  region: us-east-1
+sites:
+  - domain: localhost
+    subFolder: /
