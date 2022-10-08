@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"net"
 	"net/http"
 	"os"
@@ -105,7 +107,6 @@ func (s3 *S3FileSystem) Open(name string) (http.File, error) {
 	if err != nil {
 		return nil, os.ErrNotExist
 	}
-
 	return &httpMinioObject{
 		client: client,
 		object: obj,
@@ -143,27 +144,19 @@ func (s3 *S3FileSystem) getObject(ctx context.Context, name string) (*minio.Obje
 	return nil, os.ErrNotExist
 }
 
-type S3Handler struct {
-	fsMap map[string]*S3FileSystem
-}
-
-func NewS3Handler() *S3Handler {
+func NewS3Handler() fiber.Handler {
 	fs := make(map[string]*S3FileSystem)
 	for _, site := range config.SitesConfig {
 		fs[site.Domain] = NewS3FileSystem(config.S3Config.Bucket, site.SubFolder, site.Spa)
 	}
-	return &S3Handler{
-		fsMap: fs,
-	}
-}
-
-func (s *S3Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	hostWithPort := request.Host
-	host := strings.Split(hostWithPort, ":")[0]
-	if fs, ok := s.fsMap[host]; ok {
-		writer.Header().Set("Server", "s3web")
-		http.FileServer(fs).ServeHTTP(writer, request)
-	} else {
-		http.NotFound(writer, request)
+	return func(c *fiber.Ctx) (err error) {
+		hostname := c.Hostname()
+		domain := strings.Split(hostname, ":")[0]
+		if fs[domain] == nil {
+			return c.Next()
+		}
+		return filesystem.New(filesystem.Config{
+			Root: fs[domain],
+		})(c)
 	}
 }

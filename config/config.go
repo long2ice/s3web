@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -15,8 +16,10 @@ type S3 struct {
 }
 
 type Server struct {
-	Listen string `yaml:"listen"`
-	Gzip   bool   `yaml:"gzip"`
+	Listen        string         `yaml:"listen"`
+	LogTimezone   string         `yaml:"logTimezone"`
+	LogTimeFormat string         `yaml:"logTimeFormat"`
+	CompressLevel compress.Level `yaml:"compressLevel"`
 }
 type Site struct {
 	Domain    string `yaml:"domain"`

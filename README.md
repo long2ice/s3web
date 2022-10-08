@@ -24,6 +24,9 @@ This is example of the configuration file:
 ```yaml
 server:
   listen: 0.0.0.0:8080
+  logTimezone: Asia/Shanghai
+  logTimeFormat: '2006-01-02 15:04:05.000000'
+  compressLevel: 0
 s3:
   endpoint: localhost:9000
   schema: http
@@ -34,6 +37,7 @@ s3:
 sites:
   - domain: localhost
     subFolder: /
+    spa: false
 ```
 
 ## Credits
