@@ -118,21 +118,21 @@ func (s3 *S3FileSystem) Open(name string) (http.File, error) {
 func (s3 *S3FileSystem) getObject(ctx context.Context, name string) (*minio.Object, error) {
 	var names []string
 	if s3.spa {
-		names = []string{name, s3.subFolder + "/index.html", "/404.html"}
+		names = []string{name, path.Join(s3.subFolder, "index.html"), "/404.html"}
 	} else {
-		names = []string{name, name + "/index.html", "/404.html"}
+		names = []string{name, path.Join(name, "index.html"), "/404.html"}
 	}
 	for _, n := range names {
 		obj, err := client.GetObject(ctx, s3.bucket, n, minio.GetObjectOptions{})
 		if err != nil {
-			log.Println(err)
+			log.Error(err)
 			continue
 		}
 
 		_, err = obj.Stat()
 		if err != nil {
 			if minio.ToErrorResponse(err).Code != "NoSuchKey" {
-				log.Println(err)
+				log.Error(err)
 			}
 			continue
 		}
@@ -161,6 +161,7 @@ func (s *S3Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request)
 	hostWithPort := request.Host
 	host := strings.Split(hostWithPort, ":")[0]
 	if fs, ok := s.fsMap[host]; ok {
+		writer.Header().Set("Server", "s3web")
 		http.FileServer(fs).ServeHTTP(writer, request)
 	} else {
 		http.NotFound(writer, request)

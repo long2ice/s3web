@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	minio "github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7"
 )
 
 const (
