@@ -16,6 +16,7 @@ type S3 struct {
 
 type Server struct {
 	Listen string `yaml:"listen"`
+	Gzip   bool   `yaml:"gzip"`
 }
 type Site struct {
 	Domain    string `yaml:"domain"`

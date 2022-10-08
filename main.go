@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/NYTimes/gziphandler"
 	"net/http"
 	"time"
 
@@ -24,7 +25,13 @@ func WithLogging(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", WithLogging(NewS3Handler()))
+	var handler http.Handler
+	handler = NewS3Handler()
+	if config.ServerConfig.Gzip {
+		log.Info("gzip enabled")
+		handler = gziphandler.GzipHandler(handler)
+	}
+	http.Handle("/", WithLogging(handler))
 	listen := config.ServerConfig.Listen
 	log.Infof("Started listening on %s", listen)
 	log.Fatalln(http.ListenAndServe(listen, nil))
