@@ -60,12 +60,14 @@ func init() {
 type S3FileSystem struct {
 	bucket    string
 	subFolder string
+	spa       bool
 }
 
-func NewS3FileSystem(bucket, subFolder string) *S3FileSystem {
+func NewS3FileSystem(bucket, subFolder string, spa bool) *S3FileSystem {
 	return &S3FileSystem{
 		bucket:    bucket,
 		subFolder: subFolder,
+		spa:       spa,
 	}
 }
 
@@ -114,7 +116,12 @@ func (s3 *S3FileSystem) Open(name string) (http.File, error) {
 }
 
 func (s3 *S3FileSystem) getObject(ctx context.Context, name string) (*minio.Object, error) {
-	names := [4]string{name, name + "/index.html", name + "/index.htm", "/404.html"}
+	var names []string
+	if s3.spa {
+		names = []string{name, s3.subFolder + "/index.html", "/404.html"}
+	} else {
+		names = []string{name, name + "/index.html", "/404.html"}
+	}
 	for _, n := range names {
 		obj, err := client.GetObject(ctx, s3.bucket, n, minio.GetObjectOptions{})
 		if err != nil {
@@ -143,7 +150,7 @@ type S3Handler struct {
 func NewS3Handler() *S3Handler {
 	fs := make(map[string]*S3FileSystem)
 	for _, site := range config.SitesConfig {
-		fs[site.Domain] = NewS3FileSystem(config.S3Config.Bucket, site.SubFolder)
+		fs[site.Domain] = NewS3FileSystem(config.S3Config.Bucket, site.SubFolder, site.Spa)
 	}
 	return &S3Handler{
 		fsMap: fs,
