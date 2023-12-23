@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -89,6 +90,10 @@ func (s3 *S3FileSystem) pathIsDir(ctx context.Context, name string) bool {
 
 func (s3 *S3FileSystem) Open(name string) (http.File, error) {
 	name = path.Join(s3.subFolder, name)
+	name, err := url.QueryUnescape(name)
+	if err != nil {
+		return nil, err
+	}
 	if name == pathSeparator || s3.pathIsDir(context.Background(), name) {
 		return &httpMinioObject{
 			client: client,
