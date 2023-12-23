@@ -4,17 +4,15 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	log "github.com/sirupsen/logrus"
 	"net"
 	"net/http"
 	"os"
 	"path"
 	"strings"
 	"time"
-
-	"github.com/long2ice/s3web/config"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	log "github.com/sirupsen/logrus"
 )
 
 var client *minio.Client
@@ -36,21 +34,20 @@ func NewCustomHTTPTransport() *http.Transport {
 }
 
 func init() {
-	s3 := config.S3Config
 	defaultAWSCredProviders := []credentials.Provider{
 		&credentials.Static{
 			Value: credentials.Value{
-				AccessKeyID:     s3.AccessKey,
-				SecretAccessKey: s3.SecretKey,
+				AccessKeyID:     S3Config.AccessKey,
+				SecretAccessKey: S3Config.SecretKey,
 			},
 		},
 	}
 	var err error
 	creds := credentials.NewChainCredentials(defaultAWSCredProviders)
-	client, err = minio.New(s3.Endpoint, &minio.Options{
+	client, err = minio.New(S3Config.Endpoint, &minio.Options{
 		Creds:        creds,
-		Secure:       s3.Scheme == "https",
-		Region:       config.S3Config.Region,
+		Secure:       S3Config.Secure,
+		Region:       S3Config.Region,
 		BucketLookup: minio.BucketLookupAuto,
 		Transport:    NewCustomHTTPTransport(),
 	})
@@ -146,8 +143,8 @@ func (s3 *S3FileSystem) getObject(ctx context.Context, name string) (*minio.Obje
 
 func NewS3Handler() fiber.Handler {
 	fs := make(map[string]*S3FileSystem)
-	for _, site := range config.SitesConfig {
-		fs[site.Domain] = NewS3FileSystem(config.S3Config.Bucket, site.SubFolder, site.Spa)
+	for _, site := range SitesConfig {
+		fs[site.Domain] = NewS3FileSystem(S3Config.Bucket, site.SubFolder, site.Spa)
 	}
 	return func(c *fiber.Ctx) (err error) {
 		hostname := c.Hostname()

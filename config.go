@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -8,7 +8,7 @@ import (
 
 type S3 struct {
 	Endpoint  string `yaml:"endpoint"`
-	Scheme    string `yaml:"scheme"`
+	Secure    bool   `yaml:"secure"`
 	AccessKey string `yaml:"accessKey"`
 	SecretKey string `yaml:"secretKey"`
 	Bucket    string `yaml:"bucket"`
