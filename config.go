@@ -22,9 +22,9 @@ type Server struct {
 	CompressLevel compress.Level `yaml:"compressLevel"`
 }
 type Site struct {
-	Domain    string `yaml:"domain"`
-	SubFolder string `yaml:"subFolder"`
-	Spa       bool   `yaml:"spa"`
+	Domains   []string `yaml:"domains"`
+	SubFolder string   `yaml:"subFolder"`
+	Spa       bool     `yaml:"spa"`
 }
 type Config struct {
 	S3     *S3     `yaml:"s3"`

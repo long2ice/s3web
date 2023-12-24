@@ -11,6 +11,7 @@ s3:
   bucket: mybucket
   region: us-east-1
 sites:
-  - domain: localhost
+  - domains:
+      - localhost:8080
     subFolder: /
     spa: false

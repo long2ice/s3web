@@ -1,6 +1,6 @@
 # s3web
 
-Serve static files from any S3 compatible object storage endpoints.
+Serve static websites from any S3 compatible object storage endpoints.
 
 ## Usage
 
@@ -14,7 +14,7 @@ services:
     network_mode: host
     restart: always
     volumes:
-      - ./config:/config
+      - ./config.yaml:/config.yaml
 ```
 
 ## Configuration
@@ -29,15 +29,16 @@ server:
   compressLevel: 0
 s3:
   endpoint: localhost:9000
-  schema: http
+  secure: false
   accessKey: minio
   secretKey: minio123
   bucket: mybucket
   region: us-east-1
 sites:
-  - domain: localhost
-    subFolder: /
-    spa: false
+  - domains: 
+      - localhost # domain name
+    subFolder: / # sub folder
+    spa: false # single page application
 ```
 
 ## Credits

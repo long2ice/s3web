@@ -15,6 +15,7 @@ func main() {
 		logger.New(logger.Config{
 			TimeFormat: ServerConfig.LogTimeFormat,
 			TimeZone:   ServerConfig.LogTimezone,
+			Format:     "${time} | ${status} | ${latency} | ${ip} | ${host} | ${path}\n",
 		}),
 		compress.New(compress.Config{
 			Level: ServerConfig.CompressLevel,

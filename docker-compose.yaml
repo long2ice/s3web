@@ -5,4 +5,4 @@ services:
     network_mode: host
     restart: always
     volumes:
-      - ./config:/config
+      - ./config.yaml:/app/config.yaml

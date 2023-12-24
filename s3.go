@@ -30,7 +30,7 @@ func NewCustomHTTPTransport() *http.Transport {
 		IdleConnTimeout:       60 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 10 * time.Second,
-		DisableCompression:    true,
+		DisableCompression:    false,
 	}
 }
 
@@ -149,16 +149,18 @@ func (s3 *S3FileSystem) getObject(ctx context.Context, name string) (*minio.Obje
 func NewS3Handler() fiber.Handler {
 	fs := make(map[string]*S3FileSystem)
 	for _, site := range SitesConfig {
-		fs[site.Domain] = NewS3FileSystem(S3Config.Bucket, site.SubFolder, site.Spa)
+		s3 := NewS3FileSystem(S3Config.Bucket, site.SubFolder, site.Spa)
+		for _, domain := range site.Domains {
+			fs[domain] = s3
+		}
 	}
 	return func(c *fiber.Ctx) (err error) {
 		hostname := c.Hostname()
-		domain := strings.Split(hostname, ":")[0]
-		if fs[domain] == nil {
+		if fs[hostname] == nil {
 			return c.Next()
 		}
 		return filesystem.New(filesystem.Config{
-			Root: fs[domain],
+			Root: fs[hostname],
 		})(c)
 	}
 }
