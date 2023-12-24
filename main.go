@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ProxyHeader: "X-Forwarded-For",
+	})
 	app.Use(
 		recover.New(),
 		logger.New(logger.Config{
